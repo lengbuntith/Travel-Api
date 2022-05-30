@@ -16,7 +16,7 @@ const commentRoute = require("./routes/commentRoute");
 
 //options
 const app = express();
-const port = 3100;
+const port = 3001;
 
 //middleware
 app.use(cors({ origin: true, credentials: true }));
