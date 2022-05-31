@@ -126,7 +126,10 @@ const update_user = async (req, res) => {
 
   if (user.success) {
     const doc = await User.findById(user.data.user_id);
-    if (body.name) doc.name = body.name;
+    if (body.firstName) doc.firstName = body.firstName;
+    if (body.lastName) doc.lastName = body.lastName;
+    if (body.imageUrl) doc.imageUrl = body.imageUrl;
+
     await doc.save();
     res.status(200).json({ success: true, data: doc });
   }
@@ -177,13 +180,12 @@ const update_password = async (req, res) => {
         }
 
         //encrypt password
-        const salt = await bcrypt.genSalt();
-        newPassword = await bcrypt.hash(newPassword, salt);
-
         user.password = newPassword;
         await user.save();
 
-        res.json({ success: true, data: user });
+        const new_token = createToken(user._id);
+
+        res.json({ success: true, token: new_token, data: user });
       } else {
         res.json({ success: false, error: "Incorrect Password" });
       }
@@ -301,12 +303,10 @@ const reset_password = async (req, res) => {
 
     // 2) If token has not expired, and there is user, set the new password
     if (!user) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          error: { token: "Token is invalid or has expired" },
-        });
+      return res.status(400).json({
+        success: false,
+        error: { token: "Token is invalid or has expired" },
+      });
     }
 
     //update user password

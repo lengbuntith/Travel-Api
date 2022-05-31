@@ -28,7 +28,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 //connect mongoDB
 mongoose
-  .connect(process.env.DATABASE_ONLINE)
+  .connect(process.env.DATABASE_LOCAL)
   .then(() => {
     app.listen(port, () => {
       console.log("DB Connected");
