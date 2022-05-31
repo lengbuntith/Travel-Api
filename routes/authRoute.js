@@ -4,8 +4,8 @@ const { requireAuth, checkUser } = require("../middleware/authMiddleware");
 
 const router = Router();
 
-router.post("/login", checkUser, authController.login);
-router.post("/register", checkUser, authController.register);
+router.post("/login", authController.login);
+router.post("/register", authController.register);
 router.get("/user/:id", requireAuth, authController.get_user);
 router.post("/logout", authController.logout);
 router.get("/me", requireAuth, authController.get_me);
