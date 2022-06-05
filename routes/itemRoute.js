@@ -1,7 +1,7 @@
 const { Router } = require("express");
 const itemController = require("../controllers/itemController");
 const { requireAuthAdmin } = require("../middleware/authMiddleware");
-
+ 
 const router = Router();
 
 router.get("/all", itemController.get);

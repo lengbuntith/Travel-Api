@@ -13,10 +13,10 @@ const externalRoute = require("./routes/externalRoute");
 const itemRoute = require("./routes/itemRoute");
 const cityRoute = require("./routes/cityRoute");
 const commentRoute = require("./routes/commentRoute");
-
+const placeRoute = require("./routes/placeRoute");
 //options
 const app = express();
-const port = 3100;
+const port = 3001;
 
 //middleware
 app.use(cors({ origin: true, credentials: true }));
@@ -46,3 +46,4 @@ app.use("/item", itemRoute);
 app.use("/city", cityRoute);
 app.use("/comment", commentRoute);
 app.use(externalRoute); //for upload media
+app.use("/place", placeRoute);
