@@ -61,7 +61,7 @@ const login = async (req, res) => {
     //generate token
     const token = createToken(user._id);
     //store cookie
-    res.cookie("access_token", token);
+    //res.cookie("access_token", token);
     //response data
     res.status(200).json({ success: true, token, data: user });
   } catch (err) {
@@ -97,14 +97,16 @@ const get_user = async (req, res) => {
 
 //logout account
 const logout = (req, res) => {
-  res.clearCookie("access_token");
+  // res.clearCookie("access_token");
   res.status(200).json({ success: true });
 };
 
 //get me
 const get_me = async (req, res) => {
   //get token
-  const token = req.cookies.access_token;
+  const token = req.headers.authorization;
+
+  console.log(token);
 
   //decoded token to get user_id
   jwt.verify(token, process.env.JWT_SECRET, async (err, decodedToken) => {
@@ -119,14 +121,17 @@ const update_user = async (req, res) => {
   //get body
   const body = req.body;
   //get token
-  const token = req.cookies.access_token;
+  const token = req.headers.authorization;
   //decode token
   const user = decoded(token);
   console.log("user ", user);
 
   if (user.success) {
     const doc = await User.findById(user.data.user_id);
-    if (body.name) doc.name = body.name;
+    if (body.firstName) doc.firstName = body.firstName;
+    if (body.lastName) doc.lastName = body.lastName;
+    if (body.imageUrl) doc.imageUrl = body.imageUrl;
+
     await doc.save();
     res.status(200).json({ success: true, data: doc });
   }
@@ -153,7 +158,7 @@ const update_password = async (req, res) => {
     }
 
     //get token
-    const token = req.cookies.access_token;
+    const token = req.headers.authorization;
     //decrypt token
     const decrypted = decoded(token);
 
@@ -177,13 +182,12 @@ const update_password = async (req, res) => {
         }
 
         //encrypt password
-        const salt = await bcrypt.genSalt();
-        newPassword = await bcrypt.hash(newPassword, salt);
-
         user.password = newPassword;
         await user.save();
 
-        res.json({ success: true, data: user });
+        const new_token = createToken(user._id);
+
+        res.json({ success: true, token: new_token, data: user });
       } else {
         res.json({ success: false, error: "Incorrect Password" });
       }
@@ -195,7 +199,7 @@ const update_password = async (req, res) => {
 
 //delete user account
 const delete_user = async (req, res) => {
-  const token = req.cookies.access_token;
+  const token = req.headers.authorization;
 
   const decrypted = decoded(token);
 
@@ -225,8 +229,8 @@ const admin_login = async (req, res) => {
       //generate token
       const token = createToken(user._id);
       //store cookie
-      res.cookie("access_token", token);
-      return res.status(200).json({ success: true, data: user });
+      // res.cookie("access_token", token);
+      return res.status(200).json({ success: true, token: token, data: user });
     } else {
       return res.status(500).json({ success: false });
     }
@@ -301,12 +305,10 @@ const reset_password = async (req, res) => {
 
     // 2) If token has not expired, and there is user, set the new password
     if (!user) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          error: { token: "Token is invalid or has expired" },
-        });
+      return res.status(400).json({
+        success: false,
+        error: { token: "Token is invalid or has expired" },
+      });
     }
 
     //update user password
@@ -320,7 +322,7 @@ const reset_password = async (req, res) => {
 
     //login user
     const token = createToken(user._id);
-    res.cookie("access_token", token);
+    // res.cookie("access_token", token);
     res.status(200).json({ success: true, token, data: user });
   } catch (error) {
     const errors = handleErrors(error);

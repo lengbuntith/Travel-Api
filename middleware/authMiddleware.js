@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
 const requireAuth = (req, res, next) => {
-  const token = req.cookies.access_token;
+  const token = req.headers.authorization;
   // check json web token exists & is verified
   if (token) {
     jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
@@ -21,7 +21,7 @@ const requireAuth = (req, res, next) => {
 
 // check current user
 const checkUser = (req, res, next) => {
-  const token = req.cookies.access_token;
+  const token = req.headers.authorization;
   console.log("middleware token", token);
   if (token) {
     jwt.verify(token, process.env.JWT_SECRET, async (err, decodedToken) => {
@@ -44,7 +44,7 @@ const checkUser = (req, res, next) => {
 };
 
 const requireAuthAdmin = (req, res, next) => {
-  const token = req.cookies.access_token;
+  const token = req.headers.authorization;
   // check json web token exists & is verified
   if (token) {
     jwt.verify(token, process.env.JWT_SECRET, async (err, decodedToken) => {
