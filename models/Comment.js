@@ -15,9 +15,9 @@ const commentSchema = mongoose.Schema({
     type: String,
     required: true,
   },
-  item: {
+  place: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Item",
+    ref: "Place",
   },
 });
 
