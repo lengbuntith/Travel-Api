@@ -3,12 +3,13 @@ const Item = require("../models/Item");
 const decode = require("../services/decodeToken");
 
 exports.create = async (req, res) => {
-  const { item_id, comment, rating } = req.body;
+  const { item_id, message, rating } = req.body;
 
   try {
-    const token = req.cookies.access_token;
+    const token = req.headers.authorization;
+
     const user = decode(token);
-    console.log(item_id, comment, rating, user.data.user_id);
+    console.log(item_id, message, rating, user.data.user_id);
 
     //get information of item
     const item_doc = await Item.findById(item_id);
@@ -16,7 +17,7 @@ exports.create = async (req, res) => {
 
     //create new block comment
     const doc = await Comment.create({
-      comment: comment,
+      message: message,
       user: user.data.user_id,
       item: item_id,
       rating: rating,
@@ -38,4 +39,13 @@ exports.update = (req, res) => {};
 
 exports.delete = (req, res) => {};
 
-exports.get_by_item = (req, res) => {};
+exports.get_by_item = async (req, res) => {
+  const { item_id } = req.params;
+
+  try {
+    const item_doc = await Item.findById(item_id).populate("comments");
+    res.json({ success: true, data: item_doc.comments });
+  } catch (error) {
+    res.json({ success: false, error: error });
+  }
+};

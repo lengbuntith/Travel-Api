@@ -12,7 +12,11 @@ const create = async (req, res) => {
 
 const get = async (req, res) => {
   try {
-    const all = await Item.find().populate("city");
+    const all = await Item.find().select({
+      _id: 1,
+      title: 1,
+      thumbnail: 1,
+    });
     res.status(200).json({ success: true, data: all });
   } catch (error) {
     res.status(500).json({ success: false, error: error });
@@ -69,17 +73,60 @@ const by_id = async (req, res) => {
   const { id } = req.params;
   console.log(id);
   try {
-    const doc = await Item.findById(id).populate(["city", "comments"]);
-    console.log(doc);
-    res.status(200).json({ success: true, data: doc });
+    const itemDetail = await Item.findById(id).populate(["city", "comments"]);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        itemDetail,
+        review: [
+          {
+            _id: 1,
+            title: "Exellent",
+            value: 70, //count / total reviewers
+            count: 108, // number of reviewers
+          },
+          {
+            _id: 2,
+            title: "Very Good",
+            value: 30,
+            count: 48,
+          },
+          {
+            _id: 3,
+            title: "Average",
+            value: 15,
+            count: 29,
+          },
+          {
+            _id: 4,
+            title: "Poor",
+            value: 5,
+            count: 18,
+          },
+          {
+            _id: 5,
+            title: "Terible",
+            value: 1,
+            count: 6,
+          },
+        ],
+      },
+    });
   } catch (error) {
     res.status(500).json({ success: false, error: error });
   }
 };
+
+const update = (req, res) => {};
+
+const delete_by_id = (req, res) => {};
 
 module.exports = {
   create,
   get,
   filter,
   by_id,
+  update,
+  delete_by_id,
 };

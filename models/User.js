@@ -47,6 +47,7 @@ const userSchema = new mongoose.Schema(
     imageUrl: {
       type: String,
     },
+    saved: [{ type: mongoose.Schema.Types.ObjectId, ref: "Item" }],
     passwordResetToken: {
       type: String,
     },
