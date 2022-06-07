@@ -6,30 +6,49 @@ const placeSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+
   thumbnail: {
     type: String,
   },
+
   images: {
     type: [String],
     default: [],
   },
-  date:{
-      type: String
+
+  date: {
+    type: String,
   },
+
   story: {
     type: String,
   },
-  lat:{
-    type:String
+
+  lat: {
+    type: String,
   },
-  lng:{
-      type:String
+
+  lng: {
+    type: String,
   },
+
   city: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "City",
   },
+
   comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
+
+  totalComment: {
+    type: Number,
+    default: 0,
+  },
+
+  averageRating: {
+    type: Number,
+    default: 0,
+  },
+  
 });
 
 placeSchema.plugin(mongoosePaginate);

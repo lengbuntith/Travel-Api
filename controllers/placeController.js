@@ -2,15 +2,21 @@ const Place = require("../models/Place");
 
 //get all Places
 const get_all = async (req, res) => {
-  const { city_id, title, page, item_per_page } = req.query;
+  const { city_id, title, page, item_per_page, most_comment } = req.query;
 
   try {
     //default option paginate
     let options = {
       page: 1,
       limit: 10,
-      select: ["_id", "title", "thumbnail"],
+      select: ["_id", "title", "thumbnail", "totalComment", "totalRating"],
     };
+
+    //if query is contain most comments
+
+    if (most_comment) {
+      options.sort = { field: "asc", totalComment: -1 };
+    }
 
     //modify option paginate
     if (page) options.page = page;
@@ -72,7 +78,7 @@ const update_by_id = async (req, res) => {
 
   try {
     const doc = await Place.findById(id);
-    
+
     //dynamic update field
     if (title) doc.title = title;
     if (date) doc.date = date;
