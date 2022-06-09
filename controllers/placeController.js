@@ -81,7 +81,7 @@ const delete_by_id = async (req, res) => {
 //update a Place by id
 const update_by_id = async (req, res) => {
   const { id } = req.params;
-  const { title, date, story, lat, lng, images, city } = req.body;
+  const { title, date, story, lat, lng, images, city, thumbnail } = req.body;
 
   try {
     const doc = await Place.findById(id);
@@ -94,6 +94,7 @@ const update_by_id = async (req, res) => {
     if (lng) doc.lng = lng;
     if (images) doc.images = images;
     if (city) doc.city = city;
+    if (thumbnail) doc.thumbnail = thumbnail;
 
     await doc.save();
 

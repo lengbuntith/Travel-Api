@@ -330,6 +330,26 @@ const reset_password = async (req, res) => {
   }
 };
 
+const get_all_user = async (req, res) => {
+  try {
+    const doc = await User.find();
+    res.status(200).json({ success: true, data: doc });
+  } catch (error) {
+    res.status(400).json({ success: false, error: errors });
+  }
+};
+
+const delete_user_from_admin = async (req, res) => {
+  const { user_id } = req.params;
+
+  try {
+    const deleting = await User.deleteOne({ _id: user_id });
+    res.status(200).json({ success: true, data: deleting });
+  } catch (error) {
+    res.status(400).json({ success: false, error: error });
+  }
+};
+
 module.exports = {
   login,
   register,
@@ -343,4 +363,6 @@ module.exports = {
   forgot_password,
   reset_password,
   check_reset_expire,
+  get_all_user,
+  delete_user_from_admin,
 };

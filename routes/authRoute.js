@@ -1,6 +1,10 @@
 const { Router } = require("express");
 const authController = require("../controllers/authController");
-const { requireAuth, checkUser } = require("../middleware/authMiddleware");
+const {
+  requireAuth,
+  checkUser,
+  requireAuthAdmin,
+} = require("../middleware/authMiddleware");
 
 const router = Router();
 
@@ -20,4 +24,11 @@ router.post("/admin/login", checkUser, authController.admin_login);
 router.post("/forgot-password", authController.forgot_password);
 router.post("/reset-password/:token", authController.reset_password);
 router.get("/reset-expire/:token", authController.check_reset_expire);
+router.get("/users/all", requireAuthAdmin, authController.get_all_user);
+router.post(
+  "/user/delete/:user_id",
+  requireAuthAdmin,
+  authController.delete_user_from_admin
+);
+
 module.exports = router;
