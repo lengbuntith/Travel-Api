@@ -2,7 +2,8 @@ const Place = require("../models/Place");
 
 //get all Places
 const get_all = async (req, res) => {
-  const { city_id, title, page, item_per_page, most_comment } = req.query;
+  const { city_id, title, page, item_per_page, most_comment, select } =
+    req.query;
 
   try {
     //default option paginate
@@ -11,6 +12,12 @@ const get_all = async (req, res) => {
       limit: 10,
       select: ["_id", "title", "thumbnail", "totalComment", "totalRating"],
     };
+
+    if (select) {
+      let split_select = select.split(",");
+      options.select = options.select.concat(split_select);
+      console.log(options);
+    }
 
     //if query is contain most comments
 

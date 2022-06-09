@@ -4,9 +4,10 @@ const { requireAuthAdmin } = require("../middleware/authMiddleware");
 
 const router = Router();
 
-router.get("/all", cityController.get_all);
 router.post("/create", requireAuthAdmin, cityController.create_new);
-router.post("/update/:id");
-router.post("/delete/:id");
+router.get("/all", cityController.get_all);
+router.get("/detail/:id", cityController.by_id);
+router.post("/update/:id", requireAuthAdmin, cityController.update_by_id);
+router.post("/delete/:id", requireAuthAdmin, cityController.delete_by_id);
 
 module.exports = router;
