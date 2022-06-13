@@ -1,28 +1,31 @@
 const mongoose = require("mongoose");
-const mongoosePaginate = require("mongoose-paginate-v2");
+const mongoosePagination = require("mongoose-paginate-v2");
 
 const suggestionSchema = mongoose.Schema({
-  title: {
-    type: String,
-    required: true,
-  },
-  thumbnail: {
-    type: String,
-  },
-  images: {
-    type: [String],
-    default: [],
-  },
-  description: {
-    type: String,
-  },
-  city: {
+  place: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "City",
+    ref: "Place",
   },
-  rating: [{ type: mongoose.Schema.Types.ObjectId, ref: "Rating" }],
-});
 
-suggestionSchema.plugin(mongoosePaginate);
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
 
+  message: {
+    type: String,
+    require: false,
+  },
+
+  comment: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Likes",
+  }
+},
+
+//to filter latest oldest 
+{ timestamps : true}
+);
+
+suggestionSchema.plugin(mongoosePagination);
 module.exports = mongoose.model("Suggestion", suggestionSchema);

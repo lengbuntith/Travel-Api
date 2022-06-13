@@ -15,6 +15,8 @@ const cityRoute = require("./routes/cityRoute");
 const commentRoute = require("./routes/commentRoute");
 const placeRoute = require("./routes/placeRoute");
 const savedRoute = require("./routes/savedRoute");
+const eventRoute = require("./routes/eventRoute");
+const suggestionRoute = require("./routes/suggestionRoute")
 
 //options
 const app = express();
@@ -50,3 +52,5 @@ app.use("/comment", commentRoute);
 app.use(externalRoute); //for upload media
 app.use("/place", placeRoute);
 app.use("/saved", savedRoute);
+app.use("/event",eventRoute);
+app.use("/suggestion", suggestionRoute);
