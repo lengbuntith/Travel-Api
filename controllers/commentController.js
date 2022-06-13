@@ -33,9 +33,11 @@ exports.create = async (req, res) => {
 
     //update total rating to Place
     let total_rating = 0;
+
     place_doc.comments.forEach((comment) => {
       total_rating = total_rating + comment.rating;
     });
+
     place_doc.averageRating = parseInt(total_rating / place_doc.totalComment);
 
     await place_doc.save();
@@ -51,11 +53,68 @@ exports.update = (req, res) => {};
 exports.delete = (req, res) => {};
 
 exports.get_by_item = async (req, res) => {
-  const { item_id } = req.params;
+  console.log("get item");
+  const { place_id } = req.params;
 
   try {
-    const item_doc = await Item.findById(item_id).populate("comments");
-    res.json({ success: true, data: item_doc.comments });
+    const item_doc = await Place.findById(place_id).populate("comments");
+
+    let rating = [
+      {
+        _id: 1,
+        title: "Exellent",
+        value: 0,
+        count: 0,
+      },
+      {
+        _id: 2,
+        title: "Very Good",
+        value: 0,
+        count: 0,
+      },
+      {
+        _id: 3,
+        title: "Average",
+        value: 0,
+        count: 0,
+      },
+      {
+        _id: 4,
+        title: "Poor",
+        value: 0,
+        count: 0,
+      },
+      {
+        _id: 5,
+        title: "Terible",
+        value: 0,
+        count: 0,
+      },
+    ];
+
+    item_doc.comments.forEach((comment) => {
+      if (comment.rating == 5) {
+        rating[0].count++;
+      } else if (comment.rating == 4) {
+        rating[1].count++;
+      } else if (comment.rating == 3) {
+        rating[2].count++;
+      } else if (comment.rating == 2) {
+        rating[3].count++;
+      } else if (comment.rating == 1) {
+        rating[4].count++;
+      }
+    });
+
+    rating[0].value = rating[0].count / item_doc.totalComment;
+    rating[1].value = rating[1].count / item_doc.totalComment;
+    rating[2].value = rating[2].count / item_doc.totalComment;
+    rating[3].value = rating[3].count / item_doc.totalComment;
+    rating[4].value = rating[4].count / item_doc.totalComment;
+
+    console.log("rating", rating);
+
+    res.json({ success: true, data: item_doc.comments, rating });
   } catch (error) {
     res.json({ success: false, error: error });
   }
