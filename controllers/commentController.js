@@ -1,6 +1,7 @@
 const Comment = require("../models/Comment");
 const Place = require("../models/Place");
 const decode = require("../services/decodeToken");
+const User = require("../models/User");
 
 exports.create = async (req, res) => {
   const { place_id, message, rating } = req.body;
@@ -11,17 +12,39 @@ exports.create = async (req, res) => {
     const user = decode(token);
     console.log(place_id, message, rating, user.data.user_id);
 
+    //get user information
+    const user_info = await User.findById(user.data.user_id);
+    console.log("user ", user_info);
+
     //get information of place
     const place_doc = await Place.findById(place_id).populate(["comments"]);
     console.log("place doc", place_doc.comments[0]);
 
+    //check if user already commented
+    let userIndex = place_doc.comments.findIndex((user) => {
+      return user.userId == user_info._id;
+    });
+
+    console.log("user index", userIndex);
+
+    if (userIndex != -1) {
+      return res.status(400).json({
+        success: false,
+        error: "User already commented",
+      });
+    }
+
     //create new block comment
     const doc = await Comment.create({
       message: message,
-      user: user.data.user_id,
       place: place_id,
       rating: rating,
+      userId: user_info._id,
+      userImageUrl: user_info.imageUrl,
+      userFirstName: user_info.firstName,
+      userLastName: user_info.lastName,
     });
+
     await doc.save();
     console.log("comment doc", doc);
 
@@ -48,9 +71,37 @@ exports.create = async (req, res) => {
   }
 };
 
-exports.update = (req, res) => {};
+exports.delete = async (req, res) => {
+  const { comment_id } = req.params;
 
-exports.delete = (req, res) => {};
+  try {
+    const token = req.headers.authorization;
+    const user = decode(token);
+
+    //get comment info
+    const comment_info = await Comment.findById(comment_id);
+
+    //check if comment is owned by this user id
+    if (comment_info.userId != user.data.user_id) {
+      return res.status(400).json({
+        success: false,
+        error: "User not owned this comment",
+      });
+    }
+
+    const deleting = await Comment.deleteOne({ _id: comment_id });
+
+    res.status(200).json({
+      success: true,
+      data: deleting,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error,
+    });
+  }
+};
 
 exports.get_by_item = async (req, res) => {
   console.log("get item");
@@ -106,11 +157,11 @@ exports.get_by_item = async (req, res) => {
       }
     });
 
-    rating[0].value = rating[0].count / item_doc.totalComment;
-    rating[1].value = rating[1].count / item_doc.totalComment;
-    rating[2].value = rating[2].count / item_doc.totalComment;
-    rating[3].value = rating[3].count / item_doc.totalComment;
-    rating[4].value = rating[4].count / item_doc.totalComment;
+    rating[0].value = parseFloat(rating[0].count / item_doc.totalComment) * 100;
+    rating[1].value = parseFloat(rating[1].count / item_doc.totalComment) * 100;
+    rating[2].value = parseFloat(rating[2].count / item_doc.totalComment) * 100;
+    rating[3].value = parseFloat(rating[3].count / item_doc.totalComment) * 100;
+    rating[4].value = parseFloat(rating[4].count / item_doc.totalComment) * 100;
 
     console.log("rating", rating);
 

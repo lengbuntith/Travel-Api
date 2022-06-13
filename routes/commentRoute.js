@@ -6,7 +6,6 @@ const router = Router();
 
 router.get("/detail/:place_id", commentController.get_by_item);
 router.post("/create", requireAuth, commentController.create);
-router.post("/update/:id");
-router.post("/delete/:id");
+router.post("/delete/:comment_id", requireAuth, commentController.delete);
 
 module.exports = router;
