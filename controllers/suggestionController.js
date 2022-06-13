@@ -1,6 +1,6 @@
 const decoded = require("../services/decodeToken");
 const Suggestion = require("../models/Suggestion");
-const res = require("express/lib/response");
+//const res = require("express/lib/response");
 // const req = ("express/lib/request");
 
 const create = async (req, res) => {
@@ -36,18 +36,15 @@ const get_all = async (req, res) => {
       },
     ];
     //title :-1 : A to Z, 1: Z to A
-    let sortFilter = {
-        createdAt:-1
-    }
+    let sortFilter = { createdAt: sort, };
     //default option paginate
 
-    if (sort) sortFilter.createdAt = 1
+    // if (sort) sortFilter.createdAt = 1
     let options = {
       page: 1,
       limit: 9,
       populate: populate,
-      sort:sortFilter
-     
+      sort: sortFilter,
     };
 
     //modify option paginate
@@ -56,7 +53,7 @@ const get_all = async (req, res) => {
     //filter
     let filter = {};
     if (city_id) filter.city = city_id;
-    
+
     const find = await Suggestion.paginate(filter, options);
 
     res.status(200).json({ success: true, data: find });
@@ -64,7 +61,6 @@ const get_all = async (req, res) => {
     res.status(400).json({ success: false, error: error });
   }
 };
-
 
 // {_id: id}
 const get_id = async (req, res) => {

@@ -1,6 +1,6 @@
-const req = require("express/lib/request");
+//const req = require("express/lib/request");
 const Event = require("../models/Event");
-const Suggestion = require("../models/Suggestion");
+// const Suggestion = require("../models/Suggestion");
 const decoded = require("../services/decodeToken");
 const { update } = require("./commentController");
 
@@ -38,10 +38,8 @@ const get_all = async (req, res) => {
       },
     ];
 
-    let sortFilter = {
-      createAt: -1,
-    };
-    if (sort) sortFilter.createAt = 1;
+    let sortFilter = { createdAt: sort, };
+    // if (sort) sortFilter.createAt = 1;
     let options = {
       page: 1,
       limit: 6,
@@ -53,7 +51,7 @@ const get_all = async (req, res) => {
 
     let filter = {};
     // if (city_id) filter.city = city_id;
-    const find = await Suggestion.paginate(filter, options);
+    const find = await Event.paginate(filter, options);
     res.status(200).json({ success: true, data: find });
   } catch (error) {
     res.status(400).json({ success: false, error: error });
