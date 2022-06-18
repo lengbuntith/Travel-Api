@@ -1,5 +1,5 @@
-const { populate } = require("../models/Place");
 const Place = require("../models/Place");
+const decoded = require("../services/decodeToken");
 
 //get all Places
 const get_all = async(req, res) => {
@@ -7,6 +7,17 @@ const get_all = async(req, res) => {
     req.query;
 
     try {
+        const token = req.headers.authorization;
+        let user = "";
+        if (!token) {
+            user = {
+                data: {
+                    user_id: "62a9e1cc9585df0b1dbbec23",
+                },
+            };
+        } else user = decoded(token);
+
+        // console.log(user.data.user_id);
         let populate = "";
 
         //default option paginate
@@ -23,10 +34,16 @@ const get_all = async(req, res) => {
             // console.log(options);
 
             if (split_select !== -1)
-                options.populate = {
-                    path: "city",
-                    select: { name: 1, thumbnail: 1, description: 1 },
-                };
+                options.populate = [{
+                        path: "city",
+                        select: { name: 1, thumbnail: 1, description: 1 },
+                    },
+                    {
+                        path: "saved",
+                        match: { user: user.data.user_id },
+                        select: { user: 1, saved: 1 },
+                    },
+                ];
         }
 
         if (most_comment) {

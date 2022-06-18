@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const mongoosePagination = require("mongoose-paginate-v2");
 
-const likeSchema = mongoose.Schema({
+const commentSchema = mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
@@ -10,12 +10,12 @@ const likeSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Suggestion",
     },
-    like: {
-        type: Boolean,
+    comment: {
+        type: String,
     },
 }, {
     timestamps: true,
 });
 
-likeSchema.plugin(mongoosePagination);
-module.exports = mongoose.model("Like", likeSchema);
+commentSchema.plugin(mongoosePagination);
+module.exports = mongoose.model("CommentSuggest", commentSchema);

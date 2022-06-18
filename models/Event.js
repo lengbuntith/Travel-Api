@@ -1,28 +1,25 @@
 const mongoose = require("mongoose");
 const mongoosePagination = require("mongoose-paginate-v2");
 
-const eventSchema = mongoose.Schema(
-  {
+const eventSchema = mongoose.Schema({
     user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
     },
 
     place: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Place",
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Place",
     },
 
     desc: {
-      type: String,
+        type: String,
     },
 
-    requrement: {
-      type: String,
+    requirement: {
+        type: String,
     },
-  },
-  { timestamps: true }
-);
+}, { timestamps: true });
 
 // filter data(optional)
 eventSchema.plugin(mongoosePagination);

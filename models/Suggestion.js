@@ -2,29 +2,37 @@ const mongoose = require("mongoose");
 const mongoosePagination = require("mongoose-paginate-v2");
 
 const suggestionSchema = mongoose.Schema({
-  place: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Place",
-  },
+        place: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Place",
+        },
 
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-  },
+        user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+        },
 
-  message: {
-    type: String,
-    require: false,
-  },
+        message: {
+            type: String,
+            require: false,
+        },
 
-  comment: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Likes",
-  }
-},
+        commentsuggests: [
+            { type: mongoose.Schema.Types.ObjectId, ref: "CommentSuggest" },
+        ],
+        totalComment: {
+            type: Number,
+            default: 0,
+        },
+        likesuggests: [{ type: mongoose.Schema.Types.ObjectId, ref: "Like" }],
+        totalLike: {
+            type: Number,
+            default: 0,
+        },
+    },
 
-//to filter latest oldest 
-{ timestamps : true}
+    //to filter latest oldest
+    { timestamps: true }
 );
 
 suggestionSchema.plugin(mongoosePagination);

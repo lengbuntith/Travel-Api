@@ -10,6 +10,7 @@ const citySchema = mongoose.Schema({
     },
     thumbnail: {
         type: [String],
+        default: [],
     },
     image: {
         type: String,
