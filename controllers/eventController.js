@@ -1,8 +1,5 @@
-//const req = require("express/lib/request");
 const Event = require("../models/Event");
-// const Suggestion = require("../models/Suggestion");
 const decoded = require("../services/decodeToken");
-const { update } = require("./commentController");
 
 const create = async(req, res) => {
     const { place_id, requirement, describe } = req.body;
@@ -23,7 +20,7 @@ const create = async(req, res) => {
 };
 
 const get_all = async(req, res) => {
-    const { page, sort } = req.query;
+    const { page, sort, each_user, num_per_page } = req.query;
     try {
         // const find = await Event.find().populate(["user", "place"]);
         // const find = await Event.find()
@@ -46,10 +43,17 @@ const get_all = async(req, res) => {
             sort: sortFilter,
         };
 
+        //paginate
         if (page) options.page = page;
+        //limit per page
+        if (num_per_page) options.limit = num_per_page;
 
         let filter = {};
-        // if (city_id) filter.city = city_id;
+        if (each_user) {
+            const token = req.headers.authorization;
+            const user = decoded(token);
+            filter.user = user.data.user_id;
+        }
         const find = await Event.paginate(filter, options);
         res.status(200).json({ success: true, data: find });
     } catch (error) {
@@ -72,7 +76,6 @@ const get_id = async(req, res) => {
         res.status(400).json({ success: false, error: error });
     }
 };
-
 const delete_event = async(req, res) => {
     const { id } = req.params;
     try {
@@ -110,7 +113,7 @@ const update_event = async(req, res) => {
         if (place_id) findEvent.place = place_id;
         if (describe) findEvent.desc = describe;
         if (requirement) findEvent.requirement = requirement;
-        findEvent.save();
+        await findEvent.save();
         // console.log(findEvent);
         res.status(200).json({ success: true, data: findEvent });
     } catch (error) {
@@ -121,4 +124,10 @@ const update_event = async(req, res) => {
 // req.params : update, delete, get by id
 // req.body : create, update
 
-module.exports = { create, get_all, get_id, delete_event, update_event };
+module.exports = {
+    create,
+    get_all,
+    get_id,
+    delete_event,
+    update_event,
+};

@@ -25,7 +25,7 @@ const create = async(req, res) => {
 };
 
 const get_all = async(req, res) => {
-    const { city_id, page, sort } = req.query;
+    const { page, sort, each_user, num_per_page } = req.query;
     try {
         //filter get all
         let populate = [
@@ -53,12 +53,19 @@ const get_all = async(req, res) => {
 
         //modify option paginate
         if (page) options.page = page;
+        //limit per page
+        if (num_per_page) options.limit = num_per_page;
 
         //filter
         let filter = {};
-        if (city_id) filter.city = city_id;
+        if (each_user) {
+            const token = req.headers.authorization;
+            const user = decoded(token);
+            filter.user = user.data.user_id;
+        }
 
         const find = await Suggestion.paginate(filter, options);
+        console.log(find);
         //update total rating to Place
         // let total_like = 0;
 

@@ -18,7 +18,8 @@ const savedRoute = require("./routes/savedRoute");
 const eventRoute = require("./routes/eventRoute");
 const suggestionRoute = require("./routes/suggestionRoute");
 const likeRoute = require("./routes/likeRoute");
-const commentSuggestRouter = require("./routes/commentSuggestRoute");
+const commentSuggestRoute = require("./routes/commentSuggestRoute");
+const trendingRoute = require("./routes/trendingRoute");
 
 //options
 const app = express();
@@ -57,4 +58,5 @@ app.use("/saved", savedRoute);
 app.use("/event", eventRoute);
 app.use("/suggestion", suggestionRoute);
 app.use("/like", likeRoute);
-app.use("/commentsuggestion", commentSuggestRouter);
+app.use("/commentsuggestion", commentSuggestRoute);
+app.use("/trending", trendingRoute);

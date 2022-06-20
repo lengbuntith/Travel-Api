@@ -75,7 +75,26 @@ const get_id = async(req, res) => {
     const { id } = req.params;
 
     try {
-        const doc = await Place.findOne({ _id: id }).populate(["city", "comments"]);
+        const token = req.headers.authorization;
+        let user = "";
+        if (!token) {
+            user = {
+                data: {
+                    //fake user
+                    user_id: "62a9e1cc9585df0b1dbbec23",
+                },
+            };
+        } else user = decoded(token);
+
+        const doc = await Place.findOne({ _id: id }).populate([
+            "city",
+            "comments",
+            {
+                path: "saved",
+                match: { user: user.data.user_id },
+                select: { user: 1, saved: 1 },
+            },
+        ]);
         res.status(200).json({ success: true, data: doc });
     } catch (error) {
         res.status(500).json({ success: false, error: error });
