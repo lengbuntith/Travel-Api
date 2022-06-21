@@ -19,8 +19,6 @@ const create = async(req, res) => {
 
         //append new comment to Place
         suggest_doc.commentsuggests.push(commentSuggest._id);
-        //   console.log("place doc", place_doc.comments[0]);
-        console.log(suggest_doc);
         await suggest_doc.save();
 
         res.status(200).json({ success: true, data: commentSuggest });
@@ -28,9 +26,8 @@ const create = async(req, res) => {
         res.status(400).json({ success: false, error: error });
     }
 };
-const get_by_suggest = async(req, res) => {
-    const { id, each_user, page, num_per_page } = req.params;
-    // console.log(id, "id");
+const get_by_user = async(req, res) => {
+    const { page, num_per_page } = req.query;
     try {
         let options = {
             page: 1,
@@ -48,29 +45,26 @@ const get_by_suggest = async(req, res) => {
 
         let filter = {};
 
-        if (id) filter.suggestion = id;
-        if (each_user) {
-            const token = req.authorization.headers;
-            const user = decoded(token);
+        const token = req.headers.authorization;
+        const user = decoded(token);
+        filter.user = user.data.user_id;
 
-            filter.user = user.data.user_id;
-        }
-        const get_like = await CommentSuggestion.paginate(filter, options);
-        res.status(200).json({ success: true, data: get_like });
+        const get_comment = await CommentSuggestion.paginate(filter, options);
+        res.status(200).json({ success: true, data: get_comment });
     } catch (error) {
         res.status(400).json({ success: false, error: error });
     }
 };
 
 const delete_suggest = async(req, res) => {
-    const { comment_id } = req.params;
+    const { id } = req.params;
 
     try {
         const token = req.headers.authorization;
-        const user = decode(token);
+        const user = decoded(token);
 
         //get comment info
-        const comment_info = await CommentSuggestion.findById(comment_id);
+        const comment_info = await CommentSuggestion.findById(id);
 
         //check if comment is owned by this user id
         if (comment_info.user != user.data.user_id) {
@@ -80,7 +74,7 @@ const delete_suggest = async(req, res) => {
             });
         }
 
-        const deleting = await CommentSuggestion.deleteOne({ _id: comment_id });
+        const deleting = await CommentSuggestion.deleteOne({ _id: id });
 
         res.status(200).json({
             success: true,
@@ -96,6 +90,6 @@ const delete_suggest = async(req, res) => {
 
 module.exports = {
     create,
-    get_by_suggest,
+    get_by_user,
     delete_suggest,
 };

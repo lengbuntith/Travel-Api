@@ -10,18 +10,20 @@ const create = async(req, res) => {
 
         let liked = true;
 
-        let findLikedUser = await Likes.find({ user: user.data.user_id });
+        let findLikedUser = await Likes.find({
+            user: user.data.user_id,
+            suggestion: suggestionID,
+        });
         let likeUser = "";
 
         if (findLikedUser == "") {
-            console.log(findLikedUser);
             likeUser = await Likes.create({
                 suggestion: suggestionID,
                 like: liked,
                 user: user.data.user_id,
             });
             await likeUser.save();
-            console.log(likeUser);
+            // console.log(likeUser);
 
             //get information of place
             const suggest_doc = await Suggestion.findById(suggestionID);
@@ -29,26 +31,51 @@ const create = async(req, res) => {
             //append new comment to Place
             suggest_doc.likesuggests.push(likeUser._id);
             //   console.log("place doc", place_doc.comments[0]);
-            //  console.log(suggest_doc);
             await suggest_doc.save();
         } else {
-            console.log(findLikedUser[0].like, "hello");
             findLikedUser[0].like = !findLikedUser[0].like;
-            console.log(findLikedUser[0].like);
             await findLikedUser[0].save();
         }
-        // await findLikedUser.save();
+
+        const doc = await Suggestion.findById(suggestionID).populate({
+            path: "likesuggests",
+        });
+        console.log(doc);
+
+        doc.totalLike = 0;
+
+        doc.likesuggests.forEach((like) => {
+            console.log(like);
+            if (like.like) doc.totalLike++;
+        });
+        await doc.save();
         // res.status(200).json({ success: true, user: findLikedUser });
         res.status(200).json({ success: true, data: findLikedUser });
     } catch (error) {
         res.status(400).json({ success: false, error: error });
     }
 };
-const get_by_suggestion = async(req, res) => {
-    const { id } = req.params;
-    console.log(id, "id");
+const get_by_user = async(req, res) => {
+    const { page, num_per_page } = req.query;
+    // console.log(id, "id");
     try {
-        const get_like = await Likes.find({ suggestion: id });
+        let options = {
+            page: 1,
+            limit: 10,
+        };
+
+        if (page) options.page = page;
+        if (num_per_page) options.limit = num_per_page;
+
+        let filter = {};
+        const token = req.headers.authorization;
+        const user = decoded(token);
+        filter.user = user.data.user_id;
+
+        //select true
+        filter.like = true;
+
+        const get_like = await Likes.paginate(filter, options);
         res.status(200).json({ success: true, data: get_like });
     } catch (error) {
         res.status(400).json({ success: false, error: error });
@@ -57,5 +84,5 @@ const get_by_suggestion = async(req, res) => {
 
 module.exports = {
     create,
-    get_by_suggestion,
+    get_by_user,
 };

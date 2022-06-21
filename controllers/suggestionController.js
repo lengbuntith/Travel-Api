@@ -27,6 +27,15 @@ const create = async(req, res) => {
 const get_all = async(req, res) => {
     const { page, sort, each_user, num_per_page } = req.query;
     try {
+        const token = req.headers.authorization;
+        let user = "";
+        if (!token) {
+            user = {
+                data: {
+                    user_id: "62a9e1cc9585df0b1dbbec21",
+                },
+            };
+        } else user = decoded(token);
         //filter get all
         let populate = [
             { path: "place", select: { title: 1, thumbnail: 1 } },
@@ -37,6 +46,10 @@ const get_all = async(req, res) => {
             {
                 path: "likesuggests",
                 select: { like: 1 },
+                match: { user: user.data.user_id },
+            },
+            {
+                path: "commentsuggests",
             },
         ];
         //title :-1 : A to Z, 1: Z to A
@@ -70,10 +83,6 @@ const get_all = async(req, res) => {
         // let total_like = 0;
 
         find.docs.forEach((comment) => {
-            comment.likesuggests.forEach((like) => {
-                console.log(like);
-                if (like.like) comment.totalLike++;
-            });
             comment.totalComment = comment.commentsuggests.length;
         });
         // find.totalComment = total_rating;
@@ -87,15 +96,37 @@ const get_all = async(req, res) => {
 // {_id: id}
 const get_id = async(req, res) => {
     const { id } = req.params;
-    console.log(id);
+    const { skip, sort } = req.query;
     try {
-        const doc = await Suggestion.findOne({ _id: id })
-            // console.log(doc);
+        const token = req.headers.authorization;
+        let user = "";
+        if (!token) {
+            user = {
+                data: {
+                    //fake user
+                    user_id: "62a9e1cc9585df0b1dbbec23",
+                },
+            };
+        } else user = decoded(token);
+
+        let sortComment = 1;
+        if (sort) sortComment = sort;
+        let skipComment = 0;
+        if (skip) skipComment = skip;
+
+        const doc = await Suggestion.findById(id)
             .populate({
                 path: "place",
                 select: {
                     title: 1,
-                    thumbnail: 1,
+                    images: 1,
+                    lat: 1,
+                    lng: 1,
+                    city: 1,
+                },
+                populate: {
+                    path: "city",
+                    select: { name: 1 },
                 },
             })
             .populate({
@@ -109,13 +140,22 @@ const get_id = async(req, res) => {
             })
             .populate({
                 path: "likesuggests",
-                select: { like: 1 },
+                match: { user: user.data.user_id, like: true },
+            })
+            .populate({
+                path: "commentsuggests",
+                populate: {
+                    path: "user",
+                    select: { lastName: 1, firstName: 1, imageUrl: 1 },
+                },
+                options: {
+                    skip: skipComment,
+                    limit: 5,
+                    sort: { createdAt: sortComment },
+                },
             });
 
-        doc.likesuggests.forEach((like) => {
-            console.log(like);
-            if (like.like) doc.totalLike++;
-        });
+        console.log(doc);
         doc.totalComment = doc.commentsuggests.length;
 
         await doc.save();
