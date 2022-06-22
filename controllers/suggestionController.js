@@ -41,7 +41,7 @@ const get_all = async(req, res) => {
             { path: "place", select: { title: 1, thumbnail: 1 } },
             {
                 path: "user",
-                select: { firstName: 1, lastName: 1, imageUrl: 1, _id: 0 },
+                select: { firstName: 1, lastName: 1, imageUrl: 1 },
             },
             {
                 path: "likesuggests",

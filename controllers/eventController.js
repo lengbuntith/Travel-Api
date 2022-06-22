@@ -26,7 +26,7 @@ const get_all = async(req, res) => {
         // const find = await Event.find()
         let populate = [{
                 path: "user",
-                select: { firstName: 1, lastName: 1, imageUrl: 1, _id: 0 },
+                select: { firstName: 1, lastName: 1, imageUrl: 1 },
             },
             {
                 path: "place",
