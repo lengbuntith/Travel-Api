@@ -10,16 +10,8 @@ const path = require("path");
 //route import
 const authRoute = require("./routes/authRoute");
 const externalRoute = require("./routes/externalRoute");
-const itemRoute = require("./routes/itemRoute");
-const cityRoute = require("./routes/cityRoute");
-const commentRoute = require("./routes/commentRoute");
-const placeRoute = require("./routes/placeRoute");
-const savedRoute = require("./routes/savedRoute");
-const eventRoute = require("./routes/eventRoute");
-const suggestionRoute = require("./routes/suggestionRoute");
-const likeRoute = require("./routes/likeRoute");
-const commentSuggestRoute = require("./routes/commentSuggestRoute");
-const trendingRoute = require("./routes/trendingRoute");
+const chatRoute = require("./routes/chatRoute");
+const contactRoute = require("./routes/contactRoute");
 
 //options
 const app = express();
@@ -49,14 +41,6 @@ app.get("/", (req, res) => {
 });
 
 app.use("/auth", authRoute);
-app.use("/item", itemRoute);
-app.use("/city", cityRoute);
-app.use("/comment", commentRoute);
 app.use(externalRoute); //for upload media
-app.use("/place", placeRoute);
-app.use("/saved", savedRoute);
-app.use("/event", eventRoute);
-app.use("/suggestion", suggestionRoute);
-app.use("/like", likeRoute);
-app.use("/commentsuggestion", commentSuggestRoute);
-app.use("/trending", trendingRoute);
+app.use("/chat", chatRoute);
+app.use("/contact", contactRoute);

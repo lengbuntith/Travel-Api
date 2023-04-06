@@ -52,6 +52,10 @@ const userSchema = new mongoose.Schema({
     passwordResetExpires: {
         type: Date,
     },
+    contacts: [{
+        userId: { type: mongoose.Schema.Types.ObjectId, required: true },
+        email: { type: String, required: true }
+      }]
 }, { timestamps: true });
 
 //before save document
